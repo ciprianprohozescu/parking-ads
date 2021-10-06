@@ -5,31 +5,29 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { forecasts: [], loading: true };
+    this.state = { parkingSpots: [], loading: true };
   }
 
   componentDidMount() {
-    this.populateWeatherData();
+    this.populateParkingSpotsData();
   }
 
-  static renderForecastsTable(forecasts) {
+  static renderParkingSpotsTable(parkingSpots) {
     return (
       <table className='table table-striped' aria-labelledby="tabelLabel">
         <thead>
           <tr>
             <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
+            <th>Name</th>
             <th>Summary</th>
           </tr>
         </thead>
         <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
+          {parkingSpots.map(parkingSpot =>
+            <tr key={parkingSpot.date}>
+              <td>{parkingSpot.date}</td>
+              <td>{parkingSpot.name}</td>
+              <td>{parkingSpot.summary}</td>
             </tr>
           )}
         </tbody>
@@ -40,20 +38,20 @@ export class FetchData extends Component {
   render() {
     let contents = this.state.loading
       ? <p><em>Loading...</em></p>
-      : FetchData.renderForecastsTable(this.state.forecasts);
+      : FetchData.renderParkingSpotsTable(this.state.parkingSpots);
 
     return (
       <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
+        <h1 id="tabelLabel" >Parking Spots</h1>
+        <p>This component shows available parking spots.</p>
         {contents}
       </div>
     );
   }
 
-  async populateWeatherData() {
-    const response = await fetch('weatherforecast');
+  async populateParkingSpotsData() {
+    const response = await fetch('parkingSpots');
     const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
+    this.setState({ parkingSpots: data, loading: false });
   }
 }

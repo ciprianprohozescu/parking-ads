@@ -9,28 +9,28 @@ namespace ParkingUI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    public class ParkingSpotsController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+            "Available", "Unavailable"
         };
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        private readonly ILogger<ParkingSpotsController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public ParkingSpotsController(ILogger<ParkingSpotsController> logger)
         {
             _logger = logger;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IEnumerable<ParkingSpot> Get()
         {
             var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            return Enumerable.Range(1, 5).Select(index => new ParkingSpot
             {
                 Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
+                Name = "Spot " + rng.Next(1, 55),
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
