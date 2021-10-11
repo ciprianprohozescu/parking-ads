@@ -16,10 +16,13 @@ namespace ParkingServiceConsumer
 
         public static IRestResponse Consume()
         {
+            Console.WriteLine("ok");
             var client = new RestClient("http://psuparkingservice.fenris.ucn.dk");
+            // Set a timeout of 5 seconds
+            client.Timeout = 5000;
             var request = new RestRequest("service", DataFormat.Json);
             var response = client.Get(request);
-            Console.WriteLine(response.Content);
+            Console.WriteLine((int)response.StatusCode);
             return response;
         }
     }

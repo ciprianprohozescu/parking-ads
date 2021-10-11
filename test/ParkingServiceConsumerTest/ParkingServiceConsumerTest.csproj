@@ -18,6 +18,6 @@
     <None Remove="RestSharp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ParkingServiceConsumer\ParkingServiceConsumer.csproj" />
+    <ProjectReference Include="..\..\src\ParkingServiceConsumer\ParkingServiceConsumer.csproj" />
   </ItemGroup>
 </Project>
