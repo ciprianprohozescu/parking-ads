@@ -7,7 +7,7 @@ defaults:
     working-directory: parking-service-consumer
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
