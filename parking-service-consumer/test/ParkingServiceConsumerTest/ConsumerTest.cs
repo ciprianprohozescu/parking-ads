@@ -15,10 +15,10 @@ namespace ParkingServiceConsumerTest
         }
 
         // Add this to test that the docker image build fails when tests fail
-        [Fact]
-        public void FakeTest()
-        {
-            Assert.True(false);
-        }
+        // [Fact]
+        // public void FakeTest()
+        // {
+        //     Assert.True(false);
+        // }
     }
 }
