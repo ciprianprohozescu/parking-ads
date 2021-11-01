@@ -4,7 +4,7 @@ on: [push]
     
 defaults:
   run:
-    working-directory: parking-service-consumer
+    working-directory: parking-service
 
 jobs:
   test:

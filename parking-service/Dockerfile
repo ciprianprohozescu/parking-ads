@@ -4,8 +4,8 @@ WORKDIR /app
 # copy solution structure files and dependencies
 # this is cached so rebuilding the image is faster on code changes
 COPY *.sln .
-COPY src/ParkingServiceConsumer/*.csproj ./src/ParkingServiceConsumer/
-COPY test/ParkingServiceConsumerTest/*.csproj ./test/ParkingServiceConsumerTest/
+COPY src/ParkingService/*.csproj ./src/ParkingService/
+COPY test/ParkingServiceTest/*.csproj ./test/ParkingServiceTest/
 RUN dotnet restore
 
 # copy full solution over
@@ -14,21 +14,21 @@ RUN dotnet build
 
 # create unit test layer
 FROM build AS testrunner
-WORKDIR /app/test/ParkingServiceConsumerTest
+WORKDIR /app/test/ParkingServiceTest
 CMD ["dotnet", "test", "--logger:trx"]
 
 # run the unit tests
 FROM build AS test
-WORKDIR /app/test/ParkingServiceConsumerTest
+WORKDIR /app/test/ParkingServiceTest
 RUN dotnet test --logger:trx
 
 # publish the service
 FROM test as publish
-WORKDIR /app/src/ParkingServiceConsumer
+WORKDIR /app/src/ParkingService
 RUN dotnet publish -c Release -o out
 
 # run the service
 FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS runtime
 WORKDIR /app
-COPY --from=publish /app/src/ParkingServiceConsumer/out ./
-ENTRYPOINT ["dotnet", "ParkingServiceConsumer.dll"]
+COPY --from=publish /app/src/ParkingService/out ./
+ENTRYPOINT ["dotnet", "ParkingService.dll"]
