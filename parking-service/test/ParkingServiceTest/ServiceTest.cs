@@ -1,16 +1,17 @@
 ﻿using System;
 using Xunit;
 using RestSharp;
-using ParkingServiceConsumer;
+using ParkingService;
 
-namespace ParkingServiceConsumerTest
+namespace ParkingServiceTest
 {
-    public class ConsumerTest
+    public class ServiceTest
     {
         [Fact]
-        public void ConsumeTest()
+        public void Test()
         {
-            IRestResponse response = Consumer.Consume();
+            Service service = new Service(false);
+            IRestResponse response = service.Serve();
             Assert.NotNull(response.StatusCode);
         }
 

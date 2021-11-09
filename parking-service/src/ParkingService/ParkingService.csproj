@@ -9,6 +9,7 @@
     <None Remove="RestSharp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
     <PackageReference Include="RestSharp" Version="106.12.0" />
   </ItemGroup>
 </Project>
