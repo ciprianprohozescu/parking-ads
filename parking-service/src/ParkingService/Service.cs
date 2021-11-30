@@ -36,12 +36,19 @@ namespace ParkingService
                 client.Timeout = 5000;
                 var request = new RestRequest("service", DataFormat.Json);
                 var response = client.Get(request);
+
+                var responseMessage = response.Content;
+                // Something went wrong with the UCN API
+                if (responseMessage == "")
+                {
+                    responseMessage = "No parking spots found.";
+                }
                 
                 // Send a response with the parking spots list
                 channel.BasicPublish(exchange: "", 
                     routingKey: props.ReplyTo,
                     basicProperties: replyProps, 
-                    body: Encoding.UTF8.GetBytes(response.Content));
+                    body: Encoding.UTF8.GetBytes(responseMessage));
             };
             channel.BasicConsume(queue: "parking-requests",
                 autoAck: true,
