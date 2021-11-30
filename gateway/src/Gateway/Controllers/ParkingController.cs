@@ -18,7 +18,7 @@ namespace Gateway.Controllers
     public class ParkingController : ControllerBase
     {
         [HttpGet]
-        public string Get()
+        public async Task<string> Get()
         {
             try
             {
@@ -27,7 +27,7 @@ namespace Gateway.Controllers
                 JObject request = new JObject(
                     new JProperty("location", "Aalborg 9000"));
 
-                var response = parkingClient.Call(JsonConvert.SerializeObject(request));
+                var response = await parkingClient.Call(JsonConvert.SerializeObject(request));
                 parkingClient.Close();
                 return response;
             }
@@ -35,6 +35,12 @@ namespace Gateway.Controllers
             {
                 return e.Message;
             }
+        }
+
+        [Route("test")]
+        public async Task<string> Test()
+        {
+            return "ok";
         }
     }
 
@@ -77,7 +83,7 @@ namespace Gateway.Controllers
                 autoAck: true);
         }
         
-        public string Call(string message)
+        public async Task<string> Call(string message)
         {
             var messageBytes = Encoding.UTF8.GetBytes(message);
             channel.BasicPublish(
