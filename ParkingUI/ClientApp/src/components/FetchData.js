@@ -50,8 +50,17 @@ export class FetchData extends Component {
   }
 
   async populateParkingSpotsData() {
-    const response = await fetch('parkingSpots');
-    const data = await response.json();
-    this.setState({ parkingSpots: data, loading: false });
+    console.log('ok');
+    const response1 = fetch('http://localhost:5001/parking');
+    console.log('1');
+    const response2 = fetch('http://localhost:5001/parking/test');
+    console.log('2');
+    const response3 = fetch('http://localhost:5001/parking');
+    console.log('3');
+    const response4 = fetch('http://localhost:5001/parking/test');
+    console.log('4');
+    const response5 = fetch('http://localhost:5001/parking/test');
+    console.log(await Promise.all([response1, response2, response3, response4, response5]))
+    // this.setState({ parkingSpots: data, loading: false });
   }
 }
