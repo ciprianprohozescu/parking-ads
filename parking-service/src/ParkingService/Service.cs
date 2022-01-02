@@ -13,7 +13,7 @@ namespace ParkingService
             var factory = new ConnectionFactory() { HostName = "rabbitmq" };
         	var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
-			channel.QueueDeclare(queue: "parking-requests", 
+			channel.QueueDeclare(queue: "parking-service", 
                 durable: false,
                 exclusive: false,
                 autoDelete: false,
@@ -45,12 +45,12 @@ namespace ParkingService
                 }
                 
                 // Send a response with the parking spots list
-                channel.BasicPublish(exchange: "", 
-                    routingKey: props.ReplyTo,
+                channel.BasicPublish(exchange: "gateway", 
+                    routingKey: props.CorrelationId,
                     basicProperties: replyProps, 
                     body: Encoding.UTF8.GetBytes(responseMessage));
             };
-            channel.BasicConsume(queue: "parking-requests",
+            channel.BasicConsume(queue: "parking-service",
                 autoAck: true,
                 consumer: consumer);
 
