@@ -17,18 +17,58 @@ namespace Gateway.Controllers
     [Route("[controller]")]
     public class ParkingController : ControllerBase
     {
+        private IModel channel;
+
+        public ParkingController()
+        {
+            var factory = new ConnectionFactory() { HostName = "rabbitmq" };
+            var connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+            channel.ExchangeDeclare(exchange: "gateway", type: "direct");
+        }
+        
         [HttpGet]
         public async Task<string> Get()
         {
             try
             {
-                var parkingClient = new ParkingClient();
-                
                 JObject request = new JObject(
                     new JProperty("location", "Aalborg 9000"));
-
-                var response = await parkingClient.Call(JsonConvert.SerializeObject(request));
-                parkingClient.Close();
+                
+                // Create new message with a Correlation ID
+                var props = channel.CreateBasicProperties();
+                var correlationId = Guid.NewGuid().ToString();
+                props.CorrelationId = correlationId;
+                
+                // Create new queue and bind it to the exchange
+                var queueName = channel.QueueDeclare().QueueName;
+                channel.QueueBind(queue: queueName,
+                    exchange: "gateway",
+                    routingKey: correlationId);
+                
+                // Send the request message
+                var messageBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
+                channel.BasicPublish(
+                    exchange: "",
+                    routingKey: "parking-service",
+                    basicProperties: props,
+                    body: messageBytes);
+                
+                // Create new consumer and wait for the response
+                var response = await Task.Run(() =>
+                {
+                    BasicGetResult result = null;
+                    // TODO: maybe add a timeout to not wait infinitely
+                    while (result == null)
+                    {
+                        result = channel.BasicGet(queueName, true);
+                    }
+                    return Encoding.UTF8.GetString(result.Body.ToArray());
+                });
+                
+                // Destroy the queue
+                channel.QueueDelete(queueName);
+                
                 return response;
             }
             catch (Exception e)
@@ -41,63 +81,6 @@ namespace Gateway.Controllers
         public async Task<string> Test()
         {
             return "ok";
-        }
-    }
-
-    public class ParkingClient
-    {
-        private IConnection connection;
-        private IModel channel;
-        private string replyQueueName;
-        private EventingBasicConsumer consumer;
-        private BlockingCollection<string> replyQueue = new BlockingCollection<string>();
-        private IBasicProperties props;
-        
-        public ParkingClient()
-        {
-            var factory = new ConnectionFactory() { HostName = "rabbitmq" };
-
-            connection = factory.CreateConnection();
-            channel = connection.CreateModel();
-            replyQueueName = channel.QueueDeclare().QueueName;
-            consumer = new EventingBasicConsumer(channel);
-
-            props = channel.CreateBasicProperties();
-            var correlationId = Guid.NewGuid().ToString();
-            props.CorrelationId = correlationId;
-            props.ReplyTo = replyQueueName;
-
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var response = Encoding.UTF8.GetString(body);
-                if (ea.BasicProperties.CorrelationId == correlationId)
-                {
-                    replyQueue.Add(response);
-                }
-            };
-
-            channel.BasicConsume(
-                consumer: consumer,
-                queue: replyQueueName,
-                autoAck: true);
-        }
-        
-        public async Task<string> Call(string message)
-        {
-            var messageBytes = Encoding.UTF8.GetBytes(message);
-            channel.BasicPublish(
-                exchange: "",
-                routingKey: "parking-requests",
-                basicProperties: props,
-                body: messageBytes);
-
-            return replyQueue.Take();
-        }
-
-        public void Close()
-        {
-            connection.Close();
         }
     }
 }
