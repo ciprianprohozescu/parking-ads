@@ -17,6 +17,16 @@ namespace Gateway.Controllers
     [Route("[controller]")]
     public class ParkingController : ControllerBase
     {
+        private Dictionary<string, int> services = new Dictionary<string, int>()
+        {
+            {"parking-service", 1}
+        };
+        
+        private Dictionary<string, int> tasks = new Dictionary<string, int>()
+        {
+            {"list-parking-lots", 1}
+        };
+
         private IModel channel;
 
         public ParkingController()
@@ -32,7 +42,13 @@ namespace Gateway.Controllers
         {
             try
             {
+                Dictionary<int, int> taskList = new Dictionary<int, int>()
+                {
+                    {services["parking-service"], tasks["list-parking-lots"]}
+                };
+
                 JObject request = new JObject(
+                    new JProperty("task-list", JsonConvert.SerializeObject(taskList)),
                     new JProperty("location", "Aalborg 9000"));
                 
                 // Create new message with a Correlation ID
@@ -50,7 +66,7 @@ namespace Gateway.Controllers
                 var messageBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request));
                 channel.BasicPublish(
                     exchange: "",
-                    routingKey: "parking-service",
+                    routingKey: "main-router",
                     basicProperties: props,
                     body: messageBytes);
                 

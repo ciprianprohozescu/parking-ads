@@ -28,3 +28,16 @@ services:
       - rabbitmq
     stdin_open: true
     tty: true
+  main-router:
+    build:
+      context: .
+      dockerfile: main-router/Dockerfile
+    ports:
+      - "8081:80"
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    links:
+      - rabbitmq
+    stdin_open: true
+    tty: true
