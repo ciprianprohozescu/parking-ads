@@ -3,6 +3,8 @@ using RestSharp;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ParkingService
 {
@@ -25,8 +27,6 @@ namespace ParkingService
                 // Decode the message
                 var body = ea.Body.ToArray();
                 var props = ea.BasicProperties;
-                var replyProps = channel.CreateBasicProperties();
-                replyProps.CorrelationId = props.CorrelationId;
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(" [x] Received {0}", message);
                 
@@ -36,19 +36,22 @@ namespace ParkingService
                 client.Timeout = 5000;
                 var request = new RestRequest("service", DataFormat.Json);
                 var response = client.Get(request);
-
-                var responseMessage = response.Content;
+                
+                JObject responseMessage = new JObject(
+                    new JProperty("response", response.Content));
+                
                 // Something went wrong with the UCN API
-                if (responseMessage == "")
+                if (response.Content == "")
                 {
-                    responseMessage = "No parking spots found.";
+                    responseMessage = new JObject(
+                        new JProperty("response", ""));
                 }
                 
                 // Send a response with the parking spots list
-                channel.BasicPublish(exchange: "gateway", 
-                    routingKey: props.CorrelationId,
-                    basicProperties: replyProps, 
-                    body: Encoding.UTF8.GetBytes(responseMessage));
+                channel.BasicPublish(exchange: "", 
+                    routingKey: "main-router",
+                    basicProperties: props, 
+                    body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(responseMessage)));
             };
             channel.BasicConsume(queue: "parking-service",
                 autoAck: true,

@@ -37,30 +37,32 @@ namespace MainRouter
 
                 // Send the message to the first microservice in the task list
                 var message = JsonConvert.DeserializeObject<Dictionary<string,dynamic>>(Encoding.UTF8.GetString(body));
-                if (message != null && message.ContainsKey("task-list"))
+                if (message != null)
                 {
-                    foreach (KeyValuePair<int,int> task in JsonConvert.DeserializeObject<Dictionary<int,int>>(message["task-list"]))
+                    Console.WriteLine(" [x] Received {0}", message);
+                    if (message.ContainsKey("task-list"))
                     {
-                        // Does the message have a task?
-                        if (task.Value > 0)
+                        // This is a request message
+                        foreach (KeyValuePair<int,int> task in JsonConvert.DeserializeObject<Dictionary<int,int>>(message["task-list"]))
                         {
                             channel.BasicPublish(
                                 exchange: "",
                                 routingKey: services[task.Key],
                                 basicProperties: props,
                                 body: body);
+                            break;
                         }
-                        else
-                        {
-                            // Send it back to the gateway
-                            channel.BasicPublish(
-                                exchange: "gateway",
-                                routingKey: props.CorrelationId,
-                                basicProperties: props,
-                                body: body);
-                        }
-                        break;
                     }
+                    else
+                    {
+                        // This is a response message
+                        channel.BasicPublish(
+                            exchange: "gateway",
+                            routingKey: props.CorrelationId,
+                            basicProperties: props,
+                            body: body);
+                    }
+                    
                 }
                 else
                 {

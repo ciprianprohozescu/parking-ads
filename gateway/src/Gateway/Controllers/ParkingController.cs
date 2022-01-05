@@ -79,7 +79,10 @@ namespace Gateway.Controllers
                     {
                         result = channel.BasicGet(queueName, true);
                     }
-                    return Encoding.UTF8.GetString(result.Body.ToArray());
+                    
+                    Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(result.Body.ToArray()));
+
+                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(Encoding.UTF8.GetString(result.Body.ToArray()))["response"];
                 });
                 
                 // Destroy the queue
