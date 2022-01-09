@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RestSharp;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -29,6 +30,10 @@ namespace ParkingService
                 var props = ea.BasicProperties;
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(" [x] Received {0}", message);
+                var messageJson = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(message);
+                var taskList = JsonConvert.DeserializeObject<Dictionary<int, int>>(messageJson["task-list"]);
+                var taskTotal = messageJson["task-total"];
+                var content = messageJson["body"];
                 
                 // Request a list of parking spots from the UCN API
                 var client = new RestClient("http://psuparkingservice.fenris.ucn.dk");
@@ -37,15 +42,19 @@ namespace ParkingService
                 var request = new RestRequest("service", DataFormat.Json);
                 var response = client.Get(request);
                 
+                // Create response message
                 JObject responseMessage = new JObject(
-                    new JProperty("response", response.Content));
+                    new JProperty("body", response.Content));
                 
                 // Something went wrong with the UCN API
                 if (response.Content == "")
                 {
                     responseMessage = new JObject(
-                        new JProperty("response", ""));
+                        new JProperty("body", ""));
                 }
+                
+                // Add the total number of tasks to the response
+                responseMessage.Add("task-total", taskTotal);
                 
                 // Send a response with the parking spots list
                 channel.BasicPublish(exchange: "", 

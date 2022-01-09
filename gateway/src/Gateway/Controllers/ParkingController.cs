@@ -49,7 +49,8 @@ namespace Gateway.Controllers
 
                 JObject request = new JObject(
                     new JProperty("task-list", JsonConvert.SerializeObject(taskList)),
-                    new JProperty("location", "Aalborg 9000"));
+                    new JProperty("task-total", 1),
+                    new JProperty("body", "Aalborg 9000"));
                 
                 // Create new message with a Correlation ID
                 var props = channel.CreateBasicProperties();
@@ -82,7 +83,7 @@ namespace Gateway.Controllers
                     
                     Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(result.Body.ToArray()));
 
-                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(Encoding.UTF8.GetString(result.Body.ToArray()))["response"];
+                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(Encoding.UTF8.GetString(result.Body.ToArray()))["body"];
                 });
                 
                 // Destroy the queue
