@@ -13,7 +13,8 @@ namespace MainRouter
     {
         private static Dictionary<int, string> services = new Dictionary<int, string>()
         {
-            {1, "parking-service"}
+            {1, "parking-service"},
+            {2, "ads-service"}
         };
         
         static void Main(string[] args)

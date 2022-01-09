@@ -19,12 +19,14 @@ namespace Gateway.Controllers
     {
         private Dictionary<string, int> services = new Dictionary<string, int>()
         {
-            {"parking-service", 1}
+            {"parking-service", 1},
+            {"ads-service", 2}
         };
         
         private Dictionary<string, int> tasks = new Dictionary<string, int>()
         {
-            {"list-parking-lots", 1}
+            {"list-parking-lots", 1},
+            {"list-ads", 1}
         };
 
         private IModel channel;
