@@ -69,42 +69,5 @@ namespace ParkingService
             Console.WriteLine(" Press [enter] to exit.");
             Console.ReadLine();
         }
-
-        // public IRestResponse Serve()
-        // {
-        //     Console.WriteLine("ok");
-        //     var client = new RestClient("http://psuparkingservice.fenris.ucn.dk");
-        //     // Set a timeout of 5 seconds
-        //     client.Timeout = 5000;
-        //     var request = new RestRequest("service", DataFormat.Json);
-        //     var response = client.Get(request);
-        //
-        //     Console.WriteLine((int)response.StatusCode);
-        //     return response;
-        // }
-        //
-        // public IRestResponse Send()
-        // {
-        //     Console.WriteLine("ok");
-        //     var client = new RestClient("http://psuparkingservice.fenris.ucn.dk");
-        //     // Set a timeout of 5 seconds
-        //     client.Timeout = 5000;
-        //     var request = new RestRequest("service", DataFormat.Json);
-        //     var response = client.Get(request);
-        //
-        //     var body = Encoding.UTF8.GetBytes(response.Content);
-        //     this.channel.QueueDeclare(queue: "parking-spots",
-        //                          durable: false,
-        //                          exclusive: false,
-        //                          autoDelete: false,
-        //                          arguments: null);
-        //     this.channel.BasicPublish(exchange: "",
-        //                          routingKey: "parking-spots",
-        //                          basicProperties: null,
-        //                          body: body);
-        //
-        //     Console.WriteLine((int)response.StatusCode);
-        //     return response;
-        // }
     }
 }

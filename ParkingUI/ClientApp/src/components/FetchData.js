@@ -6,7 +6,7 @@ export class FetchData extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { parkingSpots: [], loading: true };
+    this.state = { parkingSpots: [], ad: "", loading: true };
   }
 
   componentDidMount() {
@@ -49,6 +49,7 @@ export class FetchData extends Component {
       <div>
         <h1 id="tabelLabel" >Parking Spots</h1>
         <p>This component shows available parking spots.</p>
+        <div dangerouslySetInnerHTML={{__html: this.state.ad}}/>
         {contents}
       </div>
     );
@@ -56,6 +57,6 @@ export class FetchData extends Component {
 
   async populateParkingSpotsData() {
     const data = await axios.get('http://localhost:5001/parking');
-    this.setState({ parkingSpots: data.data, loading: false });
+    this.setState({ parkingSpots: [], ad: data.data, loading: false });
   }
 }

@@ -46,7 +46,8 @@ namespace Gateway.Controllers
             {
                 Dictionary<int, int> taskList = new Dictionary<int, int>()
                 {
-                    {services["parking-service"], tasks["list-parking-lots"]}
+                    // {services["parking-service"], tasks["list-parking-lots"]}
+                    {services["ads-service"], tasks["list-ads"]}
                 };
 
                 JObject request = new JObject(
