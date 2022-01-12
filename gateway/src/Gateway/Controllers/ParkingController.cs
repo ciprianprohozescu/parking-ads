@@ -46,13 +46,13 @@ namespace Gateway.Controllers
             {
                 Dictionary<int, int> taskList = new Dictionary<int, int>()
                 {
-                    // {services["parking-service"], tasks["list-parking-lots"]}
+                    {services["parking-service"], tasks["list-parking-lots"]},
                     {services["ads-service"], tasks["list-ads"]}
                 };
 
                 JObject request = new JObject(
                     new JProperty("task-list", JsonConvert.SerializeObject(taskList)),
-                    new JProperty("task-total", 1),
+                    new JProperty("task-total", 2),
                     new JProperty("body", "Aalborg 9000"));
                 
                 // Create new message with a Correlation ID

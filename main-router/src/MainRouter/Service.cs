@@ -44,24 +44,51 @@ namespace MainRouter
                     if (message.ContainsKey("task-list"))
                     {
                         // This is a request message
-                        foreach (KeyValuePair<int,int> task in JsonConvert.DeserializeObject<Dictionary<int,int>>(message["task-list"]))
+                        Dictionary<int, int> taskList = JsonConvert.DeserializeObject<Dictionary<int,int>>(message["task-list"]);
+                        if (taskList.Count > 1)
                         {
+                            // Send it to the Splitter
                             channel.BasicPublish(
                                 exchange: "",
-                                routingKey: services[task.Key],
+                                routingKey: "splitter",
                                 basicProperties: props,
                                 body: body);
-                            break;
+                        }
+                        else
+                        {
+                            // Send it to the right end service
+                            foreach (KeyValuePair<int,int> task in taskList)
+                            {
+                                channel.BasicPublish(
+                                    exchange: "",
+                                    routingKey: services[task.Key],
+                                    basicProperties: props,
+                                    body: body);
+                            }
                         }
                     }
                     else
                     {
                         // This is a response message
-                        channel.BasicPublish(
-                            exchange: "gateway",
-                            routingKey: props.CorrelationId,
-                            basicProperties: props,
-                            body: body);
+                        int taskTotal = Int32.Parse(message["task-total"]);
+                        if (taskTotal > 1)
+                        {
+                            // Send it to the Aggregator
+                            channel.BasicPublish(
+                                exchange: "",
+                                routingKey: "aggregator",
+                                basicProperties: props,
+                                body: body);
+                        }
+                        else
+                        {
+                            // Send it to the Gateway
+                            channel.BasicPublish(
+                                exchange: "gateway",
+                                routingKey: props.CorrelationId,
+                                basicProperties: props,
+                                body: body);
+                        }
                     }
                     
                 }

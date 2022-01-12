@@ -44,13 +44,15 @@ namespace AdsService
                 
                 // Create response message
                 JObject responseMessage = new JObject(
-                    new JProperty("body", response.Content));
+                    new JProperty("body", new JObject(
+                        new JProperty("ad", response.Content))));
                 
                 // Something went wrong with the UCN API
                 if (response.Content == "")
                 {
                     responseMessage = new JObject(
-                        new JProperty("body", ""));
+                        new JProperty("body", new JObject(
+                            new JProperty("ad", ""))));
                 }
                 
                 // Add the total number of tasks to the response

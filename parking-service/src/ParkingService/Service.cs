@@ -44,13 +44,15 @@ namespace ParkingService
                 
                 // Create response message
                 JObject responseMessage = new JObject(
-                    new JProperty("body", response.Content));
+                    new JProperty("body", new JObject(
+                        new JProperty("parkingSpots", response.Content))));
                 
                 // Something went wrong with the UCN API
                 if (response.Content == "")
                 {
                     responseMessage = new JObject(
-                        new JProperty("body", ""));
+                        new JProperty("body", new JObject(
+                            new JProperty("parkingSpots", ""))));
                 }
                 
                 // Add the total number of tasks to the response
