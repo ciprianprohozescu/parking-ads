@@ -57,6 +57,10 @@ export class FetchData extends Component {
 
   async populateParkingSpotsData() {
     const data = await axios.get('http://localhost:5001/parking');
-    this.setState({ parkingSpots: data.data.parkingSpots, ad: data.data.ad, loading: false });
+    try {
+      this.setState({ parkingSpots: JSON.parse(data.data.parkingSpots), ad: data.data.ad, loading: false });
+    } catch (e) {
+      this.setState({ parkingSpots: [], ad: "Something went wrong... :(", loading: false });
+    }
   }
 }

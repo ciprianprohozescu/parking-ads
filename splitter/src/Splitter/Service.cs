@@ -7,8 +7,8 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace Splitter
-{
-        public class Service
+{ 
+    public class Service
     {
         static void Main(string[] args)
         {
@@ -51,7 +51,7 @@ namespace Splitter
                                 exchange: "",
                                 routingKey: "main-router",
                                 basicProperties: props,
-                                body: body);
+                                body: Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(messagePiece)));
                         }
                     }
                 }

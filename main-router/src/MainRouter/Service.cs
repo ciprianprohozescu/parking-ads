@@ -43,6 +43,7 @@ namespace MainRouter
                     Console.WriteLine(" [x] Received {0}", message);
                     if (message.ContainsKey("task-list"))
                     {
+                        Console.WriteLine("[x] Received request message");
                         // This is a request message
                         Dictionary<int, int> taskList = JsonConvert.DeserializeObject<Dictionary<int,int>>(message["task-list"]);
                         if (taskList.Count > 1)
@@ -69,11 +70,14 @@ namespace MainRouter
                     }
                     else
                     {
+                        Console.WriteLine("[x] Received response message");
                         // This is a response message
-                        int taskTotal = Int32.Parse(message["task-total"]);
+                        int taskTotal = (int) message["task-total"];
+                        Console.WriteLine("[x] Task total is {0}", taskTotal);
                         if (taskTotal > 1)
                         {
                             // Send it to the Aggregator
+                            Console.WriteLine("[x] Sent to Aggregator {0}", message);
                             channel.BasicPublish(
                                 exchange: "",
                                 routingKey: "aggregator",

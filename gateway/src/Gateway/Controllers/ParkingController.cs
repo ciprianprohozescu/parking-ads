@@ -86,7 +86,7 @@ namespace Gateway.Controllers
                     
                     Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(result.Body.ToArray()));
 
-                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(Encoding.UTF8.GetString(result.Body.ToArray()))["body"];
+                    return JsonConvert.SerializeObject(JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(Encoding.UTF8.GetString(result.Body.ToArray()))["body"]);
                 });
                 
                 // Destroy the queue
