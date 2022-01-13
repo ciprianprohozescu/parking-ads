@@ -41,3 +41,42 @@ services:
       - rabbitmq
     stdin_open: true
     tty: true
+  ads-service:
+    build:
+      context: .
+      dockerfile: ads-service/Dockerfile
+    ports:
+      - "8082:80"
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    links:
+      - rabbitmq
+    stdin_open: true
+    tty: true
+  aggregator:
+    build:
+      context: .
+      dockerfile: aggregator/Dockerfile
+    ports:
+      - "8083:80"
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    links:
+      - rabbitmq
+    stdin_open: true
+    tty: true
+  splitter:
+    build:
+      context: .
+      dockerfile: splitter/Dockerfile
+    ports:
+      - "8084:80"
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+    links:
+      - rabbitmq
+    stdin_open: true
+    tty: true

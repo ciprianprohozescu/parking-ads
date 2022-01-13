@@ -19,12 +19,14 @@ namespace Gateway.Controllers
     {
         private Dictionary<string, int> services = new Dictionary<string, int>()
         {
-            {"parking-service", 1}
+            {"parking-service", 1},
+            {"ads-service", 2}
         };
         
         private Dictionary<string, int> tasks = new Dictionary<string, int>()
         {
-            {"list-parking-lots", 1}
+            {"list-parking-lots", 1},
+            {"list-ads", 1}
         };
 
         private IModel channel;
@@ -44,12 +46,14 @@ namespace Gateway.Controllers
             {
                 Dictionary<int, int> taskList = new Dictionary<int, int>()
                 {
-                    {services["parking-service"], tasks["list-parking-lots"]}
+                    {services["parking-service"], tasks["list-parking-lots"]},
+                    {services["ads-service"], tasks["list-ads"]}
                 };
 
                 JObject request = new JObject(
                     new JProperty("task-list", JsonConvert.SerializeObject(taskList)),
-                    new JProperty("location", "Aalborg 9000"));
+                    new JProperty("task-total", 2),
+                    new JProperty("body", "Aalborg 9000"));
                 
                 // Create new message with a Correlation ID
                 var props = channel.CreateBasicProperties();
@@ -82,7 +86,7 @@ namespace Gateway.Controllers
                     
                     Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(result.Body.ToArray()));
 
-                    return JsonConvert.DeserializeObject<Dictionary<string, string>>(Encoding.UTF8.GetString(result.Body.ToArray()))["response"];
+                    return JsonConvert.SerializeObject(JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(Encoding.UTF8.GetString(result.Body.ToArray()))["body"]);
                 });
                 
                 // Destroy the queue
